@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ChipOS</title>
+    </head>
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    }
+    body {
+      background-image: url(Assets/Images/Wallpapers/1.jpg);  
+      background-size: cover;   
+    overflow: hidden;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    #Taskbar {
+       background-color: rgb(0,0,0);
+        width: 100%;
+        height: 50px;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        display: flex;
+        color: white;
+        z-index: 9999999999;
+    }
+    #StartMenu {
+        height: 560px;
+        width: 350px;
+        background-color: blue;
+        opacity: 0.7;
+        display: none;
+        border-radius: 5px;
+        z-index: 199999;
+        position: relative;
+        top: 45px;
+        padding: 5px;
+    }
+    .TaskbarAppButton {
+        gap: 10px;
+        background: linear-gradient(45deg, blue, red);
+        width: 65px;
+        height: 50px;
+        padding: 10px;
+        background-size: cover;
+        transition: all 0.3s;
+    }
+    #BrowserTBbutton {
+        background-image: url(Assets/Images/Apps/Browser.svg);  
+    }
+    #BrowserTBbutton:hover , #FileTBbutton:hover, #VPTBbutton:hover {
+        width: 50px;
+    }
+    #FileTBbutton {
+         background-image: url(Assets/Images/Apps/Files.svg);  
+    }
+    #VPTBbutton {
+         background-image: url(Assets/Images/Apps/VideoPlayer.svg);  
+    }
+    .gradient {
+        width: 100px;
+        height: 50px;
+  position: relative;
+  background-image: linear-gradient(
+    to right,
+    hsl(211, 100%, 50%),
+    hsl(179, 100%, 30%)
+  );
+  z-index: 1;
+}
+
+.gradient::before {
+  position: absolute;
+  content: '';
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image: linear-gradient(
+    to bottom,
+    hsl(344, 100%, 50%),
+    hsl(31, 100%, 40%)
+  );
+  z-index: -1;
+  transition: opacity 0.5s linear;
+  opacity: 0;
+}
+
+.gradient:hover::before {
+  opacity: 1;
+}
+.StartAppButton {
+    padding: 10px;
+    display: flex;
+    width: 100%;
+    background-color: white;
+    justify-content: space-between;
+    opacity: 1;
+    transition: all ease-in-out 0.3s;
+}
+.StartAppButton:hover {
+    opacity: 1;
+    transform: rotate(5deg) scale(0.9);
+    background: lightslategray;
+}
+.StartIcon {
+    width: 40px;
+    height: 40px;
+}
+#Browser {
+    display: none;
+   height: 500px;
+    width: 1000px; 
+    position: relative;
+    bottom: 10px;
+    left: 100px;
+    background-color: white;
+    z-index: 999;
+    border-radius: 10px;
+}
+#BrowserWindow {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+.CloseButton {
+    height: 30px;
+    width: 30px;
+    background: linear-gradient(45deg, darkred, red);
+    color: white;
+    transition: all 0.3s;
+}
+    .CloseButton:hover {
+    background: darkred;
+    color: white;
+    transform: scale(0.9);
+}
+.Headers {
+    display: flex;
+        justify-content: space-between;
+    padding: 10px;
+    position: relative;
+    width: 96.6%;
+    background-color: crimson;
+}
+.Popup {
+    display: none;
+    height: auto;
+    width: auto;
+    background-color: white;
+    border-radius: 5px;
+    position: fixed;
+    top: 100px;
+    left: 50px;
+}
+    #VPvideo {
+        background-color: black;
+        height: 300px;
+        width: 600px;
+    }
+    .VPbuttonFrame {
+        position: fixed;
+        bottom: 100px;
+        left: 250px;
+        z-index: 9999;
+        background-color: transparent;
+        display:flex;
+        gap: 2px;
+    }
+    .VPbutton {
+        height: 50px;
+        width: 50px;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 20px;
+        background-color: skyblue;
+        border: 4px solid blue;
+        transition: all 0.5s;
+        opacity:0.111;
+    }
+    .VPbutton:hover {
+        transform: scale(0.9);
+        background-color: darkblue;
+        border: 4px solid indigo;
+        opacity:1;
+    }
+    #FileSurferFrame {
+        list-style: none;
+    }
+    #FS {
+        width: 600px;
+        height: 800px;
+    }
+    ul {
+        font-size: 2rem;
+        padding: 5px;
+        list-style: none;
+    }
+    li button {
+        font-size: 1rem;
+        background-color: transparent;
+        border: none;
+    }
+    custom-cursor {
+        cursor: url(Assets/Cursors/paper-plane/normal\ select.cur), auto;
+    }
+</style>
+    <body>
+        <div id="Taskbar">
+            <button class="gradient" onclick="Start('StartMenu')">Start</button>
+            <button class="TaskbarAppButton" id="BrowserTBbutton" onclick="Start('Browser')"></button>
+            <button class="TaskbarAppButton" id="VPTBbutton" onclick="Start('VP')"></button>
+            <button class="TaskbarAppButton" id="FileTBbutton" onclick="Start('FS')"></button>
+            </div>
+            <div id="StartMenu">
+        <button class="StartAppButton" id="BrowserSbutton" onclick="Start('Browser')"><img class="StartIcon" src="Assets/Images/Apps/Browser.svg" alt="Browser">Browser</button>
+        <button class="StartAppButton" id="VPSbutton" onclick="Start('VP')"><img class="StartIcon" src="Assets/Images/Apps/VideoPlayer.svg" alt="Video Player">Video Player</button>
+         <button class="StartAppButton" id="VPSbutton" onclick="Start('FS')"><img class="StartIcon" src="Assets/Images/Apps/Files.svg" alt="File Surfer">File Surfer</button>
+        </div>
+        <div id="Browser">
+            <header class="Headers">
+                <h2>ChipOS Browser</h2>
+                <button class="CloseButton"onclick="Start('Browser')">X</button>
+            </header>
+            <iframe id="BrowserWindow" src="https://oh.zjhmz.cn"></iframe>
+            </div>
+        <div class="Popup" id="VP">
+             <header class="Headers">
+                <h2>ChipOS Video Player</h2>
+                <button class="CloseButton"onclick="Start('VP')">X</button>
+            </header>
+            <div class="Content">
+                <video src="Assets/Videos/Test.mp4" id="VPvideo"></video>
+                <div class="VPbuttonFrame">
+                <button class="VPbutton">⏪</button>
+                    <button class="VPbutton" onclick="Play()" id="Play">▶</button>
+                    <button class="VPbutton">⏩</button>
+                    </div>
+                 <div class="Content">
+                     <button onclick="UploadVideo(event)">Upload</button>
+                     </div>
+                    </div>
+                </div>
+                <div class="Popup" id="FS">
+                    <header class="Headers">
+                <h2>Files Surfer</h2>
+                <button class="CloseButton"onclick="Start('FS')">X</button>
+            </header>
+            <div class="Content">
+                <div id="FileSurferFrame">
+                    <ul>
+                    <li><button onclick="Start('Pics');Start('FS')">sr</button></li>
+                     <li><button onclick="">s</button></li>
+                     <li><button>s</button></li>
+                    <li><button>s</button></li>
+                     </ul>
+                </div>
+            </div>
+        </div>
+        <div class="Popup" id="Pics">
+                    <header class="Headers">
+                <h2>Files Surfer</h2>
+                <button class="CloseButton"onclick="Start('Pics')">X</button>
+            </header>
+            <div class="Content">
+                <span>nuj</span>
+                </div>
+            </div>
+    </body>
+<script>
+        function Start(ElementName) {
+            const StartMenu = document.getElementById(`${ElementName}`)
+            if(StartMenu.style.display === "none") {
+                StartMenu.style.display = "block"
+            } else {
+                StartMenu.style.display = "none"
+            }
+        }
+
+    function Play() {
+        const Video = document.getElementById('VPvideo')
+        const PlayB = document.getElementById('Play')
+        if(Video.paused) {
+            Video.play()
+            PlayB.textContext = '⏸'
+            } else {
+            Video.pause()
+            PlayB.textContent = '▶';
+            }
+    }
+
+function makeHeaderDraggable(header, popup) {
+    if (!header || !popup) return;
+
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    header.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return;
+        isDragging = true;
+        offsetX = e.clientX - popup.getBoundingClientRect().left;
+        offsetY = e.clientY - popup.getBoundingClientRect().top;
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    });
+
+    function onMouseMove(e) {
+        if (!isDragging) return;
+        let newLeft = e.clientX - offsetX;
+        let newTop = e.clientY - offsetY;
+        const minLeft = 0;
+        const minTop = 0;
+        const maxLeft = window.innerWidth - popup.offsetWidth;
+        const maxTop = window.innerHeight - popup.offsetHeight;
+        newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+        newTop = Math.max(minTop, Math.min(newTop, maxTop));
+        popup.style.left = `${newLeft}px`;
+        popup.style.top = `${newTop}px`;
+    }
+
+    function onMouseUp() {
+        isDragging = false;
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+    }
+}
+
+makeHeaderDraggable(document.getElementById('browser'));
+document.querySelectorAll('.popup').forEach(popup => {
+    const header = popup.querySelector('header');
+    if (header) makeHeaderDraggable(header, popup);
+});
+
+function UploadVideo(event) {
+    const file = event.target.files;
+    const element = document.getElementById('VPvideo')
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        element.src = `url('${e.target.result}')`;
+    };
+    reader.readAsDataURL(file);
+}
+</script>
+    </html>
